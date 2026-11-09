@@ -63,6 +63,21 @@ describe("Ulasan", () => {
   });
 });
 
+describe("Highlight beranda", () => {
+  test("statistik dan testimoni diambil dari data", async () => {
+    const org = await createUser("ORGANIZER");
+    const buyer = await createUser("CUSTOMER");
+    const past = await createEvent(org.user.id, { startDate: addDays(new Date(), -3), endDate: addDays(new Date(), -2) });
+    await createEvent(org.user.id, { city: "Bandung" });
+    await doneTransaction(buyer.user.id, past, 3, 300000);
+    await prisma.review.create({ data: { userId: buyer.user.id, eventId: past.id, rating: 5, comment: "Mantap sekali" } });
+
+    const res = await request(app).get("/api/highlights");
+    expect(res.body.stats).toEqual({ events: 1, ticketsSold: 3, cities: 2, organizers: 1 });
+    expect(res.body.reviews[0]).toMatchObject({ rating: 5, comment: "Mantap sekali" });
+  });
+});
+
 describe("Dashboard organizer", () => {
   test("statistik per bulan hanya menghitung transaksi DONE milik organizer", async () => {
     const org = await createUser("ORGANIZER");

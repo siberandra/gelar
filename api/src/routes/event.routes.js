@@ -14,6 +14,7 @@ router.get("/events", validate(schema.eventQuery, "query"), controller.list);
 router.get("/events/:slug", controller.detail);
 router.get("/categories", controller.categories);
 router.get("/cities", controller.cities);
+router.get("/highlights", controller.highlights);
 
 // Organizer: kelola acara
 router.post("/events", organizer, upload.single("image"), validate(schema.event), controller.create);

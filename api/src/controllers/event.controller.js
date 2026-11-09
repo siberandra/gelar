@@ -20,6 +20,10 @@ async function cities(req, res) {
   res.json(await eventService.listCities());
 }
 
+async function highlights(req, res) {
+  res.json(await eventService.getHighlights());
+}
+
 async function create(req, res) {
   res.status(201).json(await eventService.createEvent(req.user.id, req.body, req.file));
 }
@@ -61,6 +65,7 @@ module.exports = {
   detail,
   categories,
   cities,
+  highlights,
   create,
   update,
   remove,

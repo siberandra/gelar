@@ -94,6 +94,30 @@ async function listCities() {
   return rows.map((r) => r.city);
 }
 
+// Angka dan ulasan untuk beranda, diambil langsung dari data (bukan ditulis manual)
+async function getHighlights() {
+  const now = new Date();
+  const [events, tickets, cities, organizers, reviews] = await Promise.all([
+    prisma.event.count({ where: { startDate: { gt: now } } }),
+    prisma.transactionItem.aggregate({ where: { transaction: { status: "DONE" } }, _sum: { quantity: true } }),
+    prisma.event.findMany({ distinct: ["city"], select: { city: true } }),
+    prisma.user.count({ where: { role: "ORGANIZER" } }),
+    prisma.review.findMany({
+      where: { rating: { gte: 4 } },
+      include: {
+        user: { select: { name: true, avatarId: true } },
+        event: { select: { title: true, slug: true } },
+      },
+      orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+      take: 6,
+    }),
+  ]);
+  return {
+    stats: { events, ticketsSold: tickets._sum.quantity || 0, cities: cities.length, organizers },
+    reviews,
+  };
+}
+
 async function getOwnedEvent(eventId, organizerId) {
   const event = await prisma.event.findUnique({ where: { id: eventId }, include: { ticketTypes: true } });
   if (!event) throw new AppError(404, "Acara tidak ditemukan");
@@ -181,6 +205,7 @@ module.exports = {
   getEventBySlug,
   listCategories,
   listCities,
+  getHighlights,
   getOwnedEvent,
   createEvent,
   updateEvent,

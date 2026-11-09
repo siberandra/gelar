@@ -5,20 +5,40 @@ import Navbar, { Logo } from "./Navbar";
 import { Avatar } from "./common";
 import { useAuth } from "../context/AuthContext";
 
+const FOOTER_LINKS = [
+  ["Jelajah", [["Semua acara", "/events"], ["Musik", "/events?category=musik"], ["Workshop", "/events?category=workshop"], ["Olahraga", "/events?category=olahraga"]]],
+  ["Untuk Kamu", [["Tiket Saya", "/my-tickets"], ["Poin & Kupon", "/rewards"], ["Masuk", "/login"], ["Daftar", "/register"]]],
+  ["Organizer", [["Jadi Organizer", "/register?role=ORGANIZER"], ["Dashboard", "/organizer"], ["Buat Acara", "/organizer/events/new"]]],
+];
+
 function Footer() {
   return (
-    <footer className="mt-16 border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-        <Logo />
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          <Link to="/events" className="hover:text-brand-700">
-            Jelajah Acara
+    <footer className="mt-20 bg-slate-950 text-slate-400">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div>
+          <Link to="/" className="flex items-center gap-2 text-xl font-extrabold text-white">
+            <img src="/favicon.svg" alt="" className="h-8 w-8" /> Gelar
           </Link>
-          <Link to="/register" className="hover:text-brand-700">
-            Jadi Organizer
-          </Link>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed">Platform tiket acara untuk konser, seminar, workshop, dan olahraga di seluruh Indonesia.</p>
+          <p className="mt-4 text-sm">halo@gelar.id</p>
         </div>
-        <p>© {new Date().getFullYear()} Gelar</p>
+        {FOOTER_LINKS.map(([title, links]) => (
+          <div key={title}>
+            <p className="text-sm font-bold uppercase tracking-wider text-white">{title}</p>
+            <ul className="mt-4 space-y-2 text-sm">
+              {links.map(([label, to]) => (
+                <li key={to}>
+                  <Link to={to} className="hover:text-white">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-7xl px-4 py-5 text-xs">© {new Date().getFullYear()} Gelar · Mini project bootcamp · Semua data acara adalah data contoh</p>
       </div>
     </footer>
   );
