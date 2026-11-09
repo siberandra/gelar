@@ -1,0 +1,15 @@
+# PostgreSQL untuk development. Jalankan: docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gelar
+      POSTGRES_PASSWORD: gelar
+      POSTGRES_DB: gelar
+    ports:
+      - "127.0.0.1:5440:5432"
+    volumes:
+      - gelar-db:/var/lib/postgresql/data
+
+volumes:
+  gelar-db:

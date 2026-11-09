@@ -1,0 +1,252 @@
+// Skema database Gelar. Penjelasan desain ada di docs/03-database.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ORGANIZER
+}
+
+enum TransactionStatus {
+  WAITING_PAYMENT
+  WAITING_CONFIRMATION
+  DONE
+  REJECTED
+  EXPIRED
+  CANCELED
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  role         Role
+  referralCode String   @unique @map("referral_code")
+  referredById Int?     @map("referred_by_id")
+  avatarId     Int?     @map("avatar_file_id")
+  bio          String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  referredBy     User?           @relation("Referral", fields: [referredById], references: [id])
+  referrals      User[]          @relation("Referral")
+  avatar         File?           @relation(fields: [avatarId], references: [id])
+  events         Event[]
+  points         Point[]
+  coupons        Coupon[]
+  transactions   Transaction[]
+  reviews        Review[]
+  passwordResets PasswordReset[]
+
+  @@map("users")
+}
+
+model Point {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  amount    Int
+  remaining Int
+  source    String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User         @relation(fields: [userId], references: [id])
+  usages PointUsage[]
+
+  @@index([userId, expiresAt])
+  @@map("points")
+}
+
+model Coupon {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  code        String    @unique
+  percent     Int
+  maxDiscount Int       @map("max_discount")
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@map("coupons")
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  slug   String  @unique
+  events Event[]
+
+  @@map("categories")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  organizerId Int      @map("organizer_id")
+  categoryId  Int      @map("category_id")
+  title       String
+  slug        String   @unique
+  description String
+  city        String
+  venue       String
+  imageId     Int?     @map("image_file_id")
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  organizer    User          @relation(fields: [organizerId], references: [id])
+  category     Category      @relation(fields: [categoryId], references: [id])
+  image        File?         @relation(fields: [imageId], references: [id])
+  ticketTypes  TicketType[]
+  vouchers     Voucher[]
+  transactions Transaction[]
+  reviews      Review[]
+
+  @@index([startDate])
+  @@index([categoryId])
+  @@index([city])
+  @@map("events")
+}
+
+model TicketType {
+  id        Int    @id @default(autoincrement())
+  eventId   Int    @map("event_id")
+  name      String
+  price     Int
+  quota     Int
+  available Int
+
+  event Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  items TransactionItem[]
+
+  @@map("ticket_types")
+}
+
+model Voucher {
+  id        Int      @id @default(autoincrement())
+  eventId   Int      @map("event_id")
+  code      String
+  discount  Int
+  quota     Int
+  used      Int      @default(0)
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  event        Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([eventId, code])
+  @@map("vouchers")
+}
+
+model Transaction {
+  id              Int               @id @default(autoincrement())
+  invoice         String            @unique
+  userId          Int               @map("user_id")
+  eventId         Int               @map("event_id")
+  status          TransactionStatus
+  subtotal        Int
+  voucherId       Int?              @map("voucher_id")
+  voucherDiscount Int               @default(0) @map("voucher_discount")
+  couponId        Int?              @map("coupon_id")
+  couponDiscount  Int               @default(0) @map("coupon_discount")
+  pointsUsed      Int               @default(0) @map("points_used")
+  total           Int
+  proofId         Int?              @map("proof_file_id")
+  paymentDeadline DateTime          @map("payment_deadline")
+  confirmDeadline DateTime?         @map("confirm_deadline")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  user        User              @relation(fields: [userId], references: [id])
+  event       Event             @relation(fields: [eventId], references: [id])
+  voucher     Voucher?          @relation(fields: [voucherId], references: [id])
+  coupon      Coupon?           @relation(fields: [couponId], references: [id])
+  proof       File?             @relation(fields: [proofId], references: [id])
+  items       TransactionItem[]
+  pointUsages PointUsage[]
+
+  @@index([status, paymentDeadline])
+  @@index([status, confirmDeadline])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            Int @id @default(autoincrement())
+  transactionId Int @map("transaction_id")
+  ticketTypeId  Int @map("ticket_type_id")
+  quantity      Int
+  unitPrice     Int @map("unit_price")
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  ticketType  TicketType  @relation(fields: [ticketTypeId], references: [id])
+
+  @@map("transaction_items")
+}
+
+model PointUsage {
+  id            Int @id @default(autoincrement())
+  transactionId Int @map("transaction_id")
+  pointId       Int @map("point_id")
+  amount        Int
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  point       Point       @relation(fields: [pointId], references: [id])
+
+  @@map("point_usages")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  eventId   Int      @map("event_id")
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+  @@map("reviews")
+}
+
+model PasswordReset {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("password_resets")
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  mimeType  String   @map("mime_type")
+  data      Bytes
+  ownerId   Int?     @map("owner_id")
+  isPrivate Boolean  @default(false) @map("is_private")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users        User[]
+  events       Event[]
+  transactions Transaction[]
+
+  @@map("files")
+}
