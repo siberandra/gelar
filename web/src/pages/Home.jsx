@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, CreditCard, MapPin, Music, Search, Ticket, UploadCloud } from "lucide-react";
 import useFetch from "../hooks/useFetch";
-import { useAuth } from "../context/AuthContext";
 import EventCard, { CATEGORY_ICONS } from "../components/EventCard";
-import DemoAccounts from "../components/DemoAccounts";
 import { Avatar, EmptyState, ErrorBox, Spinner, Stars } from "../components/common";
 
 // Judul section dengan label kecil di atasnya
@@ -54,7 +52,6 @@ function Faq() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("");
   const events = useFetch("/events");
@@ -227,14 +224,6 @@ export default function Home() {
                 </figure>
               ))}
             </div>
-          </section>
-        )}
-
-        {/* Akun demo, hanya untuk yang belum login */}
-        {!user && (
-          <section className="mt-20 rounded-3xl bg-slate-100 p-6 sm:p-10">
-            <SectionTitle eyebrow="Akun demo" title="Coba setiap peran tanpa perlu daftar" subtitle="Semua data di aplikasi ini adalah data contoh. Pilih salah satu akun di bawah untuk langsung masuk." />
-            <DemoAccounts />
           </section>
         )}
 

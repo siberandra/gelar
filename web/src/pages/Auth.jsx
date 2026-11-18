@@ -5,7 +5,6 @@ import api, { errorMessage } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useUi } from "../context/UiContext";
 import { Field, TextLink } from "../components/common";
-import DemoAccounts from "../components/DemoAccounts";
 
 function AuthShell({ title, subtitle, children }) {
   return (
@@ -87,9 +86,6 @@ export function Login() {
       <p className="mt-6 text-center text-sm text-slate-600">
         Belum punya akun? <TextLink to="/register">Daftar</TextLink>
       </p>
-      <div className="mt-6">
-        <DemoAccounts compact />
-      </div>
     </AuthShell>
   );
 }
