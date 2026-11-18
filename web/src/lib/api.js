@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// Saat deploy di Render, VITE_API_URL hanya berisi nama host API
+// VITE_API_URL diisi alamat API saat deploy
 const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 export const API_URL = rawApiUrl.startsWith("http") ? rawApiUrl : `https://${rawApiUrl}/api`;
 const TOKEN_KEY = "gelar_token";

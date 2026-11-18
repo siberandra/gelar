@@ -2,7 +2,7 @@
 process.env.TZ = process.env.TZ || "Asia/Jakarta";
 require("dotenv").config();
 
-// Render memberi alamat web tanpa "https://", jadi dilengkapi di sini
+// Lengkapi alamat web jika ditulis tanpa "https://"
 if (process.env.WEB_URL && !process.env.WEB_URL.startsWith("http")) {
   process.env.WEB_URL = `https://${process.env.WEB_URL}`;
 }

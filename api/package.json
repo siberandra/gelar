@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "start:prod": "prisma migrate deploy && node prisma/seed-if-empty.js && node src/server.js",
+    "vercel-build": "prisma generate && DATABASE_URL=${DATABASE_URL_UNPOOLED:-$DATABASE_URL} prisma migrate deploy && node prisma/seed-if-empty.js",
     "test": "jest --runInBand",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
