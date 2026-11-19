@@ -54,7 +54,6 @@ export function Login() {
     setError("");
     try {
       const user = await login(form.email, form.password);
-      // Kembali ke halaman sebelumnya (misal checkout) jika ada
       const { from, checkout } = location.state || {};
       if (checkout && user.role === "CUSTOMER") navigate("/checkout", { state: checkout, replace: true });
       else if (from) navigate(from, { replace: true });

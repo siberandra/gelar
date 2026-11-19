@@ -5,7 +5,6 @@ const { saveFile } = require("./file.service");
 
 const PAGE_SIZE = 12;
 
-// Harga terendah dipakai di kartu acara ("Mulai Rp 75.000")
 function withMinPrice(event) {
   const prices = event.ticketTypes.map((t) => t.price);
   return { ...event, minPrice: prices.length ? Math.min(...prices) : 0 };
@@ -60,7 +59,6 @@ async function getEventBySlug(slug) {
   if (!event) throw new AppError(404, "Acara tidak ditemukan");
 
   const now = new Date();
-  // Voucher yang sedang berlaku ditampilkan sebagai promo di halaman acara
   const vouchers = await prisma.voucher.findMany({
     where: { eventId: event.id, startDate: { lte: now }, endDate: { gte: now } },
     select: { code: true, discount: true, endDate: true, quota: true, used: true },
@@ -94,7 +92,6 @@ async function listCities() {
   return rows.map((r) => r.city);
 }
 
-// Angka dan ulasan untuk beranda, diambil langsung dari data (bukan ditulis manual)
 async function getHighlights() {
   const now = new Date();
   const [events, tickets, cities, organizers, reviews] = await Promise.all([
@@ -150,10 +147,6 @@ async function createEvent(organizerId, data, image) {
   });
 }
 
-// Edit acara beserta jenis tiketnya:
-// - tiket dengan id   -> diubah (kuota tidak boleh lebih kecil dari yang sudah terjual)
-// - tiket tanpa id    -> ditambah
-// - tiket yang hilang -> dihapus, hanya jika belum pernah dibeli
 async function updateEvent(eventId, organizerId, data, image) {
   const event = await getOwnedEvent(eventId, organizerId);
   checkDates(data.startDate, data.endDate);

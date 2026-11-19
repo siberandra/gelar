@@ -1,4 +1,3 @@
-// Dipakai saat deploy: isi data contoh hanya jika database masih kosong
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();

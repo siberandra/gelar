@@ -1,5 +1,3 @@
-// Data contoh untuk development dan demo. Jalankan: npm run db:seed
-// Semua akun demo memakai password: password123
 process.env.TZ = process.env.TZ || "Asia/Jakarta";
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +9,6 @@ const prisma = new PrismaClient();
 const now = new Date();
 const IMAGES = path.join(__dirname, "seed-images");
 
-// Angka acak yang selalu sama setiap seed dijalankan, supaya data demo stabil
 let state = 20261109;
 function random() {
   state = (state * 1664525 + 1013904223) % 4294967296;
@@ -32,8 +29,6 @@ async function saveImage(file, ownerId = null, isPrivate = false) {
   return prisma.file.create({ data: { mimeType, data, ownerId, isPrivate } });
 }
 
-// ---------------------------------------------------------------- data master
-
 const categories = [
   { name: "Musik", slug: "musik" },
   { name: "Seminar", slug: "seminar" },
@@ -51,7 +46,6 @@ const organizers = [
   { key: "kode", name: "Komunitas Kode Kita", email: "kodekita@gelar.id", code: "KODEKITA", bio: "Komunitas developer yang membuat kelas coding gratis dan hackathon untuk pemula." },
 ];
 
-// [nama, email, kode referral, direferensikan oleh, foto]
 const customers = [
   ["Budi Santoso", "budi@gelar.id", "BUDI2026", null, "budi"],
   ["Siti Rahma", "siti@gelar.id", "SITI2026", "BUDI2026", "siti"],
@@ -79,7 +73,6 @@ const descriptions = {
   teknologi: "Sesi belajar langsung praktik dari dasar sampai membuat proyek kecil. Mentor adalah developer yang sehari-hari bekerja di industri.\n\nBawa laptop sendiri dengan browser terbaru. Materi dan rekaman dibagikan setelah acara.",
 };
 
-// [foto, organizer, kategori, judul, kota, tempat, hari dari sekarang, jam mulai, durasi jam, tiket [nama, harga, kuota]]
 const upcoming = [
   ["indie-fest", "soundwave", "musik", "Jakarta Indie Music Fest 2026", "Jakarta", "Istora Senayan", 33, 15, 8, [["Presale", 150000, 200], ["Reguler", 200000, 300], ["VIP", 450000, 50]]],
   ["akustik-braga", "soundwave", "musik", "Akustik Senja di Braga", "Bandung", "Braga Citywalk", 12, 17, 3, [["Reguler", 85000, 120]]],
@@ -107,7 +100,6 @@ const upcoming = [
   ["hackathon", "kode", "teknologi", "Hackathon Gelar 48 Jam", "Jakarta", "Block71 Jakarta", 41, 9, 48, [["Per Orang", 50000, 120]]],
 ];
 
-// Acara yang sudah lewat: untuk statistik, ulasan, dan riwayat pembelian
 const past = [
   ["konser-amal", "soundwave", "musik", "Konser Amal Akhir Tahun 2025", "Jakarta", "Balai Sarbini", -320, 19, 4, [["Reguler", 150000, 300]]],
   ["desain-ui", "kode", "teknologi", "Workshop Desain UI untuk Pemula", "Bandung", "Ruang Kolaborasi", -250, 9, 5, [["Reguler", 100000, 50]]],
@@ -182,7 +174,6 @@ async function main() {
     }
     cust[code] = user;
     if (referrer) {
-      // Sama seperti alur registrasi. Referral lama dibuat "baru" supaya kupon & poin masih berlaku untuk demo.
       const credited = addDays(now, -(40 - i * 2));
       await prisma.coupon.create({
         data: { userId: user.id, code: `REF-${code}`, percent: 10, maxDiscount: 50000, expiresAt: addMonths(credited, 3), createdAt: credited },
@@ -192,7 +183,6 @@ async function main() {
       });
     }
   }
-  // Contoh poin yang sudah hangus dan kupon yang sudah kedaluwarsa
   await prisma.point.create({
     data: { userId: cust.BUDI2026.id, amount: 10000, remaining: 10000, source: "Referral dari Rina", expiresAt: addDays(now, -10), createdAt: addMonths(addDays(now, -10), -3) },
   });
@@ -243,7 +233,6 @@ async function main() {
   const proof = fs.readFileSync(path.join(IMAGES, "proof.png"));
   let invoiceNo = 1;
 
-  // Satu pembelian. Kursi, voucher, kupon, dan poin diperbarui supaya data konsisten dengan aturan bisnis.
   async function buy(event, buyer, status, createdAt, opts = {}) {
     const ticket = opts.ticket || event.ticketTypes[between(0, event.ticketTypes.length - 1)];
     const quantity = opts.quantity || between(1, 3);
@@ -296,7 +285,6 @@ async function main() {
   const buyers = Object.values(cust);
   const budi = cust.BUDI2026;
 
-  // Acara lampau: 12-24 pembeli, tersebar 2 bulan sebelum acara (mengisi grafik tahun/bulan/hari)
   for (const p of past) {
     const event = events[p[0]];
     const count = between(12, 24);
@@ -304,13 +292,11 @@ async function main() {
       const buyer = k === 0 && p[0] === "akustik-vol1" ? budi : pick(buyers);
       await buy(event, buyer, "DONE", addHours(addDays(event.startDate, -between(1, 60)), -between(0, 10)), { withProof: true });
     }
-    // Beberapa yang gagal, untuk realisme
     await buy(event, pick(buyers), "EXPIRED", addDays(event.startDate, -between(5, 40)));
     await buy(event, pick(buyers), "REJECTED", addDays(event.startDate, -between(5, 40)), { withProof: true });
   }
   await buy(events["konser-amal"], cust.HENDRA26, "DONE", addDays(events["konser-amal"].startDate, -10), { voucher: vouchers["konser-amal"], withProof: true });
 
-  // Acara mendatang: penjualan 30 hari terakhir
   for (const u of upcoming) {
     const event = events[u[0]];
     const count = between(3, 10);
@@ -319,7 +305,6 @@ async function main() {
     }
   }
 
-  // Contoh yang sengaja dibuat untuk demo setiap status dan potongan
   await buy(events["indie-fest"], budi, "DONE", addDays(now, -8), { ticket: events["indie-fest"].ticketTypes[1], quantity: 2, voucher: vouchers["indie-fest"], points: 5000, withProof: true });
   await buy(events["jazz-malam"], budi, "WAITING_PAYMENT", addHours(now, -0.4), { quantity: 2 });
   await buy(events["orkestra"], budi, "CANCELED", addDays(now, -3));

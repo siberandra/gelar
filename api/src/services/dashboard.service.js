@@ -21,10 +21,6 @@ async function summary(organizerId) {
   };
 }
 
-// Data grafik penjualan (hanya transaksi DONE):
-// - period=year  -> per tahun
-// - period=month -> per bulan dalam tahun yang dipilih
-// - period=day   -> per tanggal dalam bulan yang dipilih
 async function stats(organizerId, { period, year, month, eventId }) {
   const where = { status: "DONE", event: { organizerId } };
   if (eventId) where.eventId = eventId;
@@ -89,7 +85,6 @@ async function myEvents(organizerId) {
   });
 }
 
-// Peserta = customer dengan transaksi DONE, dijumlahkan per orang
 async function attendees(organizerId, eventId) {
   const event = await getOwnedEvent(eventId, organizerId);
   const transactions = await prisma.transaction.findMany({

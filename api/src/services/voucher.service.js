@@ -27,7 +27,6 @@ async function deleteVoucher(voucherId, organizerId) {
   await prisma.voucher.delete({ where: { id: voucherId } });
 }
 
-// Cari voucher yang masih berlaku untuk acara tertentu. Dipakai saat cek kode dan saat checkout.
 async function findValidVoucher(eventId, code, client = prisma) {
   const voucher = await client.voucher.findUnique({
     where: { eventId_code: { eventId, code: code.toUpperCase() } },

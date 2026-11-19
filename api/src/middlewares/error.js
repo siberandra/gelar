@@ -5,7 +5,6 @@ function notFound(req, res) {
   res.status(404).json({ message: "Endpoint tidak ditemukan" });
 }
 
-// Semua error berakhir di sini dan dikirim dengan format { message }
 function errorHandler(err, req, res, next) {
   if (err.statusCode) {
     return res.status(err.statusCode).json({ message: err.message });

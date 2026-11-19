@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
 
-// Bukti bayar bersifat privat: harus diminta dengan token login.
-// Tag <img> biasa tidak bisa mengirim token, jadi gambar diambil lewat Axios lalu ditampilkan sebagai blob.
 export default function PrivateImage({ fileId, alt, className }) {
   const [src, setSrc] = useState(null);
   const [failed, setFailed] = useState(false);

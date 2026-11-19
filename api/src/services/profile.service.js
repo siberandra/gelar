@@ -27,7 +27,6 @@ async function changePassword(userId, { oldPassword, newPassword }) {
   });
 }
 
-// Saldo = jumlah sisa poin yang belum kedaluwarsa
 async function pointBalance(userId, client = prisma) {
   const result = await client.point.aggregate({
     where: { userId, expiresAt: { gt: new Date() } },

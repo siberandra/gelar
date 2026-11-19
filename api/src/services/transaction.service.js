@@ -12,7 +12,6 @@ const PAYMENT_HOURS = 2;
 const CONFIRM_DAYS = 3;
 const MAX_TICKETS = 10;
 
-// Gabungkan item dengan jenis tiket yang sama, contoh [{id:1,qty:1},{id:1,qty:2}] -> [{id:1,qty:3}]
 function mergeItems(items) {
   const map = new Map();
   for (const item of items) {
@@ -30,11 +29,11 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
   const totalQty = merged.reduce((sum, i) => sum + i.quantity, 0);
   if (totalQty > MAX_TICKETS) throw new AppError(400, `Maksimal ${MAX_TICKETS} tiket per transaksi`);
 
-  // Semua langkah di bawah adalah satu SQL transaction (docs/04 bagian 2)
+  // satu SQL transaction
   return prisma.$transaction(async (tx) => {
     const now = new Date();
 
-    // 1. Ambil harga tiket dari database (harga dari browser tidak dipakai)
+    // 1. ambil harga tiket dari database
     const ticketTypes = await tx.ticketType.findMany({
       where: { eventId, id: { in: merged.map((i) => i.ticketTypeId) } },
     });
@@ -42,7 +41,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
     const priceOf = (id) => ticketTypes.find((t) => t.id === id);
     const subtotal = merged.reduce((sum, i) => sum + priceOf(i.ticketTypeId).price * i.quantity, 0);
 
-    // 2. Cek voucher, kupon, dan saldo poin, lalu hitung harga akhir
+    // 2. cek voucher, kupon, poin, lalu hitung harga akhir
     const voucher = voucherCode ? await findValidVoucher(eventId, voucherCode, tx) : null;
 
     let coupon = null;
@@ -64,7 +63,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
     if (voucher && price.voucherDiscount === 0) throw new AppError(400, "Voucher tidak bisa dipakai untuk tiket gratis");
     if (coupon && price.couponDiscount === 0) throw new AppError(400, "Kupon tidak bisa dipakai untuk transaksi ini");
 
-    // 3. Kurangi kursi. Update bersyarat: hanya berhasil kalau kursi masih cukup.
+    // 3. kurangi kursi (hanya kalau masih cukup)
     for (const item of merged) {
       const result = await tx.ticketType.updateMany({
         where: { id: item.ticketTypeId, available: { gte: item.quantity } },
@@ -75,7 +74,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
       }
     }
 
-    // 4. Pakai voucher (kuota) dan kupon
+    // 4. pakai voucher dan kupon
     if (voucher) {
       const result = await tx.voucher.updateMany({
         where: { id: voucher.id, used: { lt: voucher.quota } },
@@ -91,7 +90,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
       if (result.count === 0) throw new AppError(400, "Kupon sudah dipakai");
     }
 
-    // 5. Potong poin, mulai dari yang paling cepat kedaluwarsa (FIFO), dan catat asalnya
+    // 5. potong poin, yang paling cepat hangus dulu
     const pointUsages = [];
     let need = price.pointsUsed;
     if (need > 0) {
@@ -113,7 +112,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
       if (need > 0) throw new AppError(400, "Saldo poin tidak cukup");
     }
 
-    // 6. Simpan transaksi. Total 0 (gratis) langsung selesai tanpa bukti bayar.
+    // 6. simpan transaksi
     return tx.transaction.create({
       data: {
         invoice: invoiceNumber(),
@@ -138,8 +137,7 @@ async function checkout(userId, { eventId, items, voucherCode, couponId, usePoin
   });
 }
 
-// Rollback: ubah status lalu kembalikan kursi, voucher, kupon, dan poin (docs/04 bagian 3).
-// Status hanya diubah jika status lama masih salah satu dari fromStatuses, jadi tidak bisa dobel.
+// rollback: kembalikan kursi, voucher, kupon, dan poin
 async function releaseTransaction(id, fromStatuses, toStatus) {
   return prisma.$transaction(async (tx) => {
     const changed = await tx.transaction.updateMany({
@@ -172,7 +170,6 @@ async function releaseTransaction(id, fromStatuses, toStatus) {
   });
 }
 
-// Dipanggil scheduler tiap menit dan sebelum transaksi ditampilkan
 async function expireOverdue(now = new Date()) {
   const [unpaid, unconfirmed] = await Promise.all([
     prisma.transaction.findMany({
@@ -260,8 +257,6 @@ async function getMine(userId, id) {
   return prisma.transaction.findUnique({ where: { id }, include: detailInclude });
 }
 
-// ---------- Organizer ----------
-
 async function getOrganizerTransaction(organizerId, id) {
   const transaction = await prisma.transaction.findUnique({
     where: { id },
@@ -299,7 +294,6 @@ async function accept(organizerId, id) {
   });
   if (result.count === 0) throw new AppError(400, "Transaksi ini tidak sedang menunggu konfirmasi");
 
-  // Email dikirim setelah data tersimpan
   await mail.sendTransactionResult(transaction, transaction.user, transaction.event, true);
   return { ...transaction, status: "DONE" };
 }

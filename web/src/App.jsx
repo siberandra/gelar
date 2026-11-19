@@ -23,13 +23,11 @@ export default function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        {/* Publik */}
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Explore />} />
         <Route path="/events/:slug" element={<EventDetail />} />
         <Route path="/organizers/:id" element={<OrganizerProfile />} />
 
-        {/* Hanya untuk yang belum login */}
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -37,7 +35,6 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
-        {/* Customer */}
         <Route element={<ProtectedRoute roles={["CUSTOMER"]} />}>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/transactions/:id" element={<Payment />} />
@@ -49,7 +46,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Route>
 
-      {/* Organizer */}
       <Route element={<ProtectedRoute roles={["ORGANIZER"]} />}>
         <Route path="/organizer" element={<OrganizerLayout />}>
           <Route index element={<Dashboard />} />

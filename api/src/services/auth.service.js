@@ -11,7 +11,6 @@ const REFERRAL_POINTS = 10000;
 const COUPON_PERCENT = 10;
 const COUPON_MAX = 50000;
 
-// Data user tanpa password, aman dikirim ke frontend
 function publicUser(user) {
   const { password, ...rest } = user;
   return rest;
@@ -22,7 +21,6 @@ function signToken(user) {
 }
 
 async function uniqueReferralCode(tx) {
-  // Peluang kode kembar sangat kecil, tapi tetap dicek
   for (;;) {
     const code = randomCode(8);
     const exists = await tx.user.findUnique({ where: { referralCode: code } });
@@ -46,8 +44,6 @@ async function register({ name, email, password, role, referralCode }) {
   const hashed = await bcrypt.hash(password, 10);
   const now = new Date();
 
-  // User baru, kupon untuknya, dan poin untuk pemilik kode dibuat dalam satu SQL transaction.
-  // Kalau satu langkah gagal, semuanya dibatalkan.
   const user = await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
       data: {
@@ -101,7 +97,6 @@ async function me(userId) {
 
 async function forgotPassword(email) {
   const user = await prisma.user.findUnique({ where: { email } });
-  // Jawaban ke user selalu sama supaya orang lain tidak bisa mengecek email mana yang terdaftar
   if (!user) return;
 
   const token = crypto.randomBytes(32).toString("hex");

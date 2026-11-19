@@ -3,7 +3,6 @@ import { CalendarDays, Dumbbell, GraduationCap, Laptop, MapPin, Mic2, Music, Spa
 import { fileUrl } from "../lib/api";
 import { formatDate, priceLabel } from "../lib/format";
 
-// Warna gambar pengganti per kategori, dipakai jika organizer belum upload gambar
 const GRADIENTS = {
   musik: "from-fuchsia-500 to-indigo-600",
   seminar: "from-sky-500 to-blue-700",

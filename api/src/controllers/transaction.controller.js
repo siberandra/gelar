@@ -3,8 +3,6 @@ const dashboardService = require("../services/dashboard.service");
 
 const id = (req) => Number(req.params.id);
 
-// ---------- Customer ----------
-
 async function checkout(req, res) {
   res.status(201).json(await transactionService.checkout(req.user.id, req.body));
 }
@@ -25,8 +23,6 @@ async function cancel(req, res) {
   await transactionService.cancelByCustomer(req.user.id, id(req));
   res.json({ message: "Transaksi dibatalkan" });
 }
-
-// ---------- Organizer ----------
 
 async function summary(req, res) {
   res.json(await dashboardService.summary(req.user.id));

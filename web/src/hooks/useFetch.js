@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import api, { errorMessage } from "../lib/api";
 
-// Ambil data dari API. url = null berarti belum perlu mengambil apa-apa.
 export default function useFetch(url, params) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(Boolean(url));

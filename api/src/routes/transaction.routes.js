@@ -9,14 +9,12 @@ const router = Router();
 const customer = [authenticate, authorize("CUSTOMER")];
 const organizer = [authenticate, authorize("ORGANIZER")];
 
-// Customer
 router.post("/transactions", customer, validate(schema.checkout), controller.checkout);
 router.get("/transactions", customer, validate(schema.transactionQuery, "query"), controller.listMine);
 router.get("/transactions/:id", customer, controller.getMine);
 router.post("/transactions/:id/proof", customer, upload.single("proof"), controller.uploadProof);
 router.post("/transactions/:id/cancel", customer, controller.cancel);
 
-// Dashboard organizer
 router.get("/dashboard/summary", organizer, controller.summary);
 router.get("/dashboard/stats", organizer, validate(schema.stats, "query"), controller.stats);
 router.get("/dashboard/events", organizer, controller.myEvents);

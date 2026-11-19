@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 
-// Tanpa huruf/angka yang mirip (O/0, I/1) supaya kode mudah diketik ulang
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function randomCode(length) {

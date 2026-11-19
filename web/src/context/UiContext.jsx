@@ -4,9 +4,6 @@ import Modal from "../components/Modal";
 
 const UiContext = createContext(null);
 
-// Menyediakan dua hal untuk semua halaman:
-// - toast(pesan, "success" | "error")
-// - confirm({ title, message, confirmText, danger }) -> Promise<boolean>
 export function UiProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const [dialog, setDialog] = useState(null);

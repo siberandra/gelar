@@ -3,7 +3,6 @@ const AppError = require("../utils/AppError");
 
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
-// File disimpan di memori dulu (req.file.buffer), lalu service menyimpannya ke tabel files
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 2 * 1024 * 1024 },

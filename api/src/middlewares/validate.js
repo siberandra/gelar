@@ -1,6 +1,5 @@
 const AppError = require("../utils/AppError");
 
-// Validasi req.body (atau req.query) memakai skema zod. Hasil yang sudah bersih menggantikan input asli.
 function validate(schema, source = "body") {
   return (req, res, next) => {
     const result = schema.safeParse(req[source]);

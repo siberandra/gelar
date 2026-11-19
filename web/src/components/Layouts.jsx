@@ -44,7 +44,6 @@ function Footer() {
   );
 }
 
-// Layout halaman publik dan customer: navbar di atas, footer di bawah
 export function MainLayout() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -65,7 +64,6 @@ const MENU = [
   { to: "/organizer/settings", icon: Settings, label: "Pengaturan" },
 ];
 
-// Layout organizer: sidebar di kiri (desktop), menu hamburger (HP)
 export function OrganizerLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();

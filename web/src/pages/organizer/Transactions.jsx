@@ -140,7 +140,6 @@ export default function Transactions() {
       {loading && <Spinner />}
       {error && <ErrorBox message={error} onRetry={reload} />}
       {!loading && data?.length === 0 && <EmptyState icon={ReceiptText} title="Tidak ada transaksi" message="Belum ada transaksi dengan status ini." />}
-      {/* HP: kartu bertumpuk */}
       {!loading && data?.length > 0 && (
         <div className="space-y-3 md:hidden">
           {data.map((t) => (
@@ -161,7 +160,6 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* Desktop: tabel */}
       {!loading && data?.length > 0 && (
         <div className="card hidden overflow-x-auto md:block">
           <table className="w-full min-w-[720px] text-sm">

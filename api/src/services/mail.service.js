@@ -11,13 +11,11 @@ function getTransporter() {
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
     });
   } else {
-    // Development: email tidak dikirim, hanya dicetak di terminal
     transporter = nodemailer.createTransport({ jsonTransport: true });
   }
   return transporter;
 }
 
-// Email hanya pemberitahuan. Kalau gagal, cukup dicatat; proses utama tidak ikut gagal.
 async function sendMail(to, subject, html) {
   try {
     const info = await getTransporter().sendMail({ from: process.env.MAIL_FROM, to, subject, html });

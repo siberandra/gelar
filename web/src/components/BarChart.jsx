@@ -1,13 +1,11 @@
 import { rupiah } from "../lib/format";
 
-// Grafik batang sederhana tanpa library: tinggi batang = nilai / nilai terbesar.
 function short(value) {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(value % 1_000_000 ? 1 : 0)} jt`;
   if (value >= 1000) return `${Math.round(value / 1000)} rb`;
   return String(value);
 }
 
-// Bulatkan batas atas grafik ke angka "rapi" (1, 2, 4, 5, 8, 10 x 10^n) supaya garis bantunya enak dibaca
 function niceMax(value) {
   if (value <= 0) return 0;
   const base = 10 ** Math.floor(Math.log10(value));

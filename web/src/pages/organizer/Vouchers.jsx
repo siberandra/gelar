@@ -81,7 +81,6 @@ export default function Vouchers() {
   const eventId = params.get("event") || "";
   const vouchers = useFetch(eventId ? `/events/${eventId}/vouchers` : null);
 
-  // Pilih acara pertama secara otomatis
   useEffect(() => {
     if (!eventId && events.data?.length) setParams({ event: String(events.data[0].id) }, { replace: true });
   }, [eventId, events.data, setParams]);

@@ -139,7 +139,6 @@ export default function EventDetail() {
             <p className="mt-2 whitespace-pre-line leading-relaxed text-slate-600">{event.description}</p>
           </section>
 
-          {/* Pemilih tiket di HP tampil di sini; di desktop di kolom kanan */}
           <div className="mt-8 lg:hidden">{ticketPicker}</div>
 
           <section className="mt-10">

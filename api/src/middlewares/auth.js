@@ -11,7 +11,6 @@ function readToken(req) {
   }
 }
 
-// Wajib login. Isi token (id, role) disimpan di req.user
 function authenticate(req, res, next) {
   const payload = readToken(req);
   if (!payload) return next(new AppError(401, "Silakan login terlebih dahulu"));
@@ -19,14 +18,12 @@ function authenticate(req, res, next) {
   next();
 }
 
-// Login tidak wajib, tapi kalau ada token tetap dibaca (dipakai untuk file privat)
 function optionalAuth(req, res, next) {
   const payload = readToken(req);
   if (payload) req.user = { id: payload.id, role: payload.role };
   next();
 }
 
-// Cek peran, contoh: authorize("ORGANIZER")
 function authorize(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

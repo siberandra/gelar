@@ -8,7 +8,6 @@ import { EventImage } from "../../components/EventCard";
 import { ErrorBox, Spinner } from "../../components/common";
 import { formatDate, rupiah } from "../../lib/format";
 
-// Hanya untuk tampilan. Harga final tetap dihitung ulang di server.
 function preview({ subtotal, voucher, coupon, balance, usePoints }) {
   const voucherCut = voucher ? Math.min(voucher.discount, subtotal) : 0;
   const afterVoucher = subtotal - voucherCut;

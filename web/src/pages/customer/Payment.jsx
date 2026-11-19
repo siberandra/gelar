@@ -10,7 +10,6 @@ import { formatDate, formatDateTime, rupiah } from "../../lib/format";
 
 const BANK = { name: "Bank BCA", number: "8730 1234 5678", holder: "PT Gelar Acara Indonesia" };
 
-// Hitung mundur sampai deadline, diperbarui setiap detik
 function useCountdown(deadline) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -31,7 +30,6 @@ export default function Payment() {
   const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  // Saat waktu habis, ambil ulang data supaya status EXPIRED dari server tampil
   useEffect(() => {
     if (trx?.status === "WAITING_PAYMENT" && countdown.ms === 0) reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps

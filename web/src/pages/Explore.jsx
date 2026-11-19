@@ -17,7 +17,6 @@ export default function Explore() {
   const price = params.get("price") || "";
   const page = Number(params.get("page")) || 1;
 
-  // Ubah satu filter di URL. Filter selain halaman mengembalikan ke halaman 1.
   function setFilter(key, value) {
     const next = new URLSearchParams(params);
     if (value) next.set(key, value);
@@ -26,7 +25,6 @@ export default function Explore() {
     setParams(next, { replace: true });
   }
 
-  // Kata kunci masuk ke URL setelah user berhenti mengetik 500 ms (debounce)
   useEffect(() => {
     if ((params.get("search") || "") !== debouncedSearch) setFilter("search", debouncedSearch.trim());
     // eslint-disable-next-line react-hooks/exhaustive-deps

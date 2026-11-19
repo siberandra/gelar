@@ -7,7 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(Boolean(tokenStorage.get()));
 
-  // Saat aplikasi dibuka, cek apakah token lama masih berlaku
   useEffect(() => {
     if (!tokenStorage.get()) return;
     api

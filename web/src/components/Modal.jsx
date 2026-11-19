@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 
 export default function Modal({ open, onClose, title, children, wide = false }) {
-  // Tutup dengan tombol Escape
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose();

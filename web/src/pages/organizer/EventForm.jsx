@@ -25,7 +25,6 @@ export default function EventForm() {
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
 
-  // Mode edit: isi form dengan data acara
   useEffect(() => {
     const event = myEvents.data?.find((e) => e.id === Number(id));
     if (!event) return;
@@ -47,7 +46,6 @@ export default function EventForm() {
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
   const setTicket = (index, key, value) => setTickets(tickets.map((t, i) => (i === index ? { ...t, [key]: value } : t)));
 
-  // Validasi sederhana di browser; aturan lengkap tetap dicek di server
   function validate() {
     const e = {};
     if (form.title.trim().length < 5) e.title = "Nama acara minimal 5 karakter";
@@ -85,7 +83,6 @@ export default function EventForm() {
     });
     if (!ok) return;
 
-    // Form berisi file, jadi dikirim sebagai multipart/form-data
     const body = new FormData();
     Object.entries({ ...form, startDate: fromInputDateTime(form.startDate), endDate: fromInputDateTime(form.endDate) }).forEach(([k, v]) => body.append(k, v));
     body.append("ticketTypes", JSON.stringify(tickets.map(({ id, name, price, quota }) => ({ id, name, price: Number(price), quota: Number(quota) }))));

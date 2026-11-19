@@ -1,7 +1,6 @@
 const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 
-// Boleh review jika punya transaksi DONE untuk acara itu dan acaranya sudah selesai (BR-15)
 async function createReview(userId, eventId, { rating, comment }) {
   const event = await prisma.event.findUnique({ where: { id: eventId } });
   if (!event) throw new AppError(404, "Acara tidak ditemukan");

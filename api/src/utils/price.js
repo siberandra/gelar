@@ -1,5 +1,3 @@
-// Hitung harga akhir transaksi. Urutan: voucher -> kupon -> poin (docs/01 BR-02).
-// Fungsi ini tidak menyentuh database supaya mudah dites.
 function calculatePrice({ subtotal, voucherDiscount = 0, coupon = null, pointBalance = 0, usePoints = false }) {
   const voucherCut = Math.min(voucherDiscount, subtotal);
   const afterVoucher = subtotal - voucherCut;

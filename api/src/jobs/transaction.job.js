@@ -2,7 +2,6 @@ const { expireOverdue } = require("../services/transaction.service");
 
 const EVERY_MINUTE = 60 * 1000;
 
-// Cek tiap menit: transaksi yang lewat 2 jam -> EXPIRED, lewat 3 hari tanpa konfirmasi -> CANCELED
 function startTransactionJob() {
   const run = async () => {
     try {

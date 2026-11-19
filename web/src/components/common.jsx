@@ -24,7 +24,6 @@ export function ErrorBox({ message, onRetry }) {
   );
 }
 
-// Ditampilkan saat daftar kosong, misalnya hasil filter/pencarian tidak ada
 export function EmptyState({ title, message, action, icon: Icon = SearchX }) {
   return (
     <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">

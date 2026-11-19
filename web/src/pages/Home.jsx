@@ -5,7 +5,6 @@ import useFetch from "../hooks/useFetch";
 import EventCard, { CATEGORY_ICONS } from "../components/EventCard";
 import { Avatar, EmptyState, ErrorBox, Spinner, Stars } from "../components/common";
 
-// Judul section dengan label kecil di atasnya
 function SectionTitle({ eyebrow, title, subtitle, center = false, action }) {
   return (
     <div className={`mb-8 gap-4 ${center ? "flex flex-col items-center text-center" : "flex flex-wrap items-end justify-between"}`}>
@@ -71,7 +70,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero dengan foto */}
       <section className="relative overflow-hidden bg-slate-900 text-white">
         <img src="/hero.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-brand-900/30" />
@@ -87,7 +85,6 @@ export default function Home() {
       </section>
 
       <div className="mx-auto max-w-7xl px-4">
-        {/* Kotak pencarian mengambang di bawah hero */}
         <form onSubmit={submit} className="relative z-10 -mt-20 grid gap-3 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-slate-200 sm:-mt-24 sm:grid-cols-[1fr_14rem_auto] sm:p-5">
           <label className="block">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Cari acara</span>
@@ -111,7 +108,6 @@ export default function Home() {
           <button className="btn-primary self-end px-8 py-3">Cari Acara</button>
         </form>
 
-        {/* Kategori */}
         <section className="mt-12">
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {categories.data?.map((c) => {
@@ -128,7 +124,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Acara mendatang */}
         <section className="mt-16">
           <SectionTitle
             eyebrow="Jangan sampai kehabisan"
@@ -152,7 +147,6 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Statistik dari data asli */}
       {stats && (
         <section className="mt-20 bg-brand-800 text-white">
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-12 text-center md:grid-cols-4">
@@ -172,7 +166,6 @@ export default function Home() {
       )}
 
       <div className="mx-auto max-w-7xl px-4">
-        {/* Cara kerja */}
         <section className="mt-20">
           <SectionTitle eyebrow="Cara kerja" title="Tiga langkah dapat tiket" center />
           <div className="grid gap-5 md:grid-cols-3">
@@ -189,7 +182,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Kota */}
         {cities.data?.length > 0 && (
           <section className="mt-20">
             <SectionTitle eyebrow="Jelajah per kota" title="Ada acara di kotamu" />
@@ -203,7 +195,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* Testimoni dari ulasan asli */}
         {highlights.data?.reviews.length > 0 && (
           <section className="mt-20">
             <SectionTitle eyebrow="Kata peserta" title="Ulasan dari mereka yang sudah datang" center />
@@ -227,13 +218,11 @@ export default function Home() {
           </section>
         )}
 
-        {/* FAQ */}
         <section className="mt-20 grid items-start gap-8 lg:grid-cols-[1fr_1.4fr]">
           <SectionTitle eyebrow="FAQ" title="Ada pertanyaan?" subtitle="Hal yang paling sering ditanyakan soal pembayaran, poin, dan ulasan." />
           <Faq />
         </section>
 
-        {/* Ajakan organizer */}
         <section className="relative mt-20 overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 p-8 text-white sm:p-12">
           <div className="relative max-w-xl">
             <h2 className="text-2xl font-extrabold sm:text-3xl">Punya acara? Jual tiketnya di Gelar</h2>
